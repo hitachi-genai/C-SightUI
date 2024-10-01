@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  ui-dev-server:
+    build:
+      context: .
+      dockerfile: docker/dev.dockerfile
+      args:
+        - GPR_TOKEN=${GPR_TOKEN}
+    volumes:
+      - ./src:/app/src
+    ports:
+      - 3000:3000
+      - 3001:3001 # for HMR
+
+  # it's used to build the image for the nginx container
+  ui-nginx:
+    image: gen-ai-ui
+    build:
+      context: .
+      dockerfile: docker/nginx.dockerfile
+      args:
+        - GPR_TOKEN=${GPR_TOKEN}
+    profiles: ['nginx']
+    ports:
+      - 80:80
+

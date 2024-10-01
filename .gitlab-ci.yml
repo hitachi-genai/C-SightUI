@@ -1,0 +1,31 @@
+image: node:latest
+
+stages:
+  - build
+  - test
+ 
+variables:
+  REACT_APP_ENV_DEV: dev
+  REACT_APP_ENV_PROD: production
+ 
+before_script:
+  - npm install
+ 
+test:
+  stage: test
+  script:
+    - npm test
+
+lint:
+  stage: test
+  script:
+    - npm run lint    
+ 
+build:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - build/
+ 
