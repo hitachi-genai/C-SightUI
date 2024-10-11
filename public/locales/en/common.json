@@ -1,0 +1,7 @@
+{
+  "count-value": "count value",
+  "current-date": "Today is {{value, formatDate(format: LLLL)}}",
+  "change-language": "Change Language",
+  "genAI": "GenAI",
+  "switch-theme": "Switch theme"
+}

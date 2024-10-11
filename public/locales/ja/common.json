@@ -1,0 +1,7 @@
+{
+  "count-value": "カウント",
+  "current-date": "今日 {{value, formatDate(format: LLLL)}}",
+  "change-language": "言語を変更",
+  "genAI": "汎用AI",
+  "switch-theme": "テーマを変更"
+}
