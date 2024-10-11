@@ -7,84 +7,58 @@ import {
   HvVerticalNavigationHeader,
   HvVerticalNavigationTree,
 } from "@hitachivantara/uikit-react-core";
-import {
-  BarChart,
-  Deploy,
-  LogOut,
-  Open,
-  User,
-} from "@hitachivantara/uikit-react-icons";
+import { BarChart, LogOut, User, Preview, DatabaseView, Cash } from "@hitachivantara/uikit-react-icons";
 
+// Navigation data
 const navigationData = [
-  { id: "00", label: "Installation Overview", icon: <Open /> },
+  { id: "00", label: "Dashboard", icon: <DatabaseView /> },
   {
     id: "01",
-    label: "Hardware",
-    icon: <BarChart />,
+    label: "Essential Views",
+    icon: <Preview />,
     data: [
-      { id: "01-01", label: "Ambient Monitoring", icon: <BarChart /> },
-      { id: "01-02", label: "Server Status Summary" },
+      { id: "01-01", label: "Quick Insights", icon: <BarChart /> },
+      { id: "01-02", label: "Infrastructure Costs" },
+      { id: "01-03", label: "Usage Stats" },
+      { id: "01-04", label: "GenAI Revenue", icon: <Cash /> },
     ],
   },
   {
     id: "02",
-    label: "System",
-    icon: <Deploy />,
+    label: "Consultancy Add-Ons",
+    icon: <BarChart />,
     data: [
-      { id: "02-01", label: "Buckets", icon: <Deploy /> },
-      { id: "02-02", label: "Admin Users" },
-      {
-        id: "02-03",
-        label: "Log Bundle",
-        data: [
-          { id: "02-03-01", label: "Rest API" },
-          { id: "02-03-02", label: "License" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "03",
-    label: "System 2",
-    data: [
-      { id: "03-01", label: "Buckets" },
-      { id: "03-02", label: "Admin Users" },
-      {
-        id: "03-03",
-        label: "Log Bundle",
-        data: [
-          { id: "03-03-01", label: "Rest API" },
-          { id: "03-03-02", label: "License" },
-        ],
-      },
+      { id: "02-01", label: "NPS Scores", icon: <BarChart /> },
+      { id: "02-02", label: "Staff Costs", icon: <User /> },
+      { id: "02-03", label: "Productivity Gains" },
     ],
   },
 ];
 
-export const CollapsibleIcons = () => {
+interface CollapsibleIconsProps {
+  isOpen: boolean;
+  toggleMenu: () => void;
+}
+
+export const CollapsibleIcons: React.FC<CollapsibleIconsProps> = ({ isOpen, toggleMenu }) => {
   const [value, setValue] = useState("01-01");
-  const [show, setShow] = useState(false);
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <HvVerticalNavigation
-        open={show}
-        useIcons
-        className="xyz"
-      >
+    <div style={{ height: "100%", minWidth: isOpen ? "300px" : "60px", display: "flex", flexDirection: "column" }}>
+      <HvVerticalNavigation open={isOpen} useIcons aria-label="" className="hvVerticalNavigation">
         <HvVerticalNavigationHeader
-          title="Menu"
-          onCollapseButtonClick={() => setShow(!show)}
+          title="C-Sight"
+          onCollapseButtonClick={toggleMenu}
           collapseButtonProps={{
             "aria-label": "collapseButton",
-            "aria-expanded": show,
+            "aria-expanded": isOpen,
           }}
+          className="hvVerticalNavigationHeader"
         />
         <HvVerticalNavigationTree
           collapsible
-          style={{ flexGrow: 1 }} // Allow this to grow and take available space
+          style={{ flexGrow: 1 }}
           defaultExpanded
-          aria-label="Example 3 navigation"
           selected={value}
           onChange={(event, data) => setValue(data.id)}
           data={navigationData}

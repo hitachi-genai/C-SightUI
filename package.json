@@ -31,17 +31,22 @@
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@fortawesome/fontawesome-free": "^6.6.0",
     "@hitachi-genai/uikit-core": "^1.0.1",
     "@hitachivantara/uikit-react-core": "^5.41.1",
     "@mui/material": "^5.15.3",
     "dayjs": "^1.11.10",
+    "highcharts": "^11.4.8",
+    "highcharts-react-official": "^3.2.1",
     "i18next": "^23.7.7",
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-http-backend": "^2.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-highcharts": "^16.1.0",
     "react-i18next": "^13.5.0",
-    "react-router-dom": "^6.21.1"
+    "react-router-dom": "^6.21.1",
+    "react-table": "^7.8.0"
   },
   "devDependencies": {
     "@originjs/vite-plugin-federation": "^1.3.3",

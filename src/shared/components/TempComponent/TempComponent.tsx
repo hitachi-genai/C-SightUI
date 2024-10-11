@@ -19,12 +19,11 @@ function TempComponent() {
   };
 
   return (
-    <div style={{ height: '100vh' }}>
+    <div style={{ height: '50vh' }}>
       <Header />
       <HvContainer
         component="main"
         maxWidth="lg"
-        style={{ paddingTop: theme.header.height, height: '100%' }}
       >
         {/* <h1>{t('genAI')}</h1> */}
         {/* <button type="button" onClick={onClick}>
