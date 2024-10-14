@@ -75,7 +75,7 @@ function Header() {
       initialState: { pageIndex: 0, pageSize: 10 } as Partial<TableState<any>>,
     },
     useSortBy,
-    useExpanded, // Move this before usePagination
+    useExpanded,
     usePagination,
     useRowSelect
   );
