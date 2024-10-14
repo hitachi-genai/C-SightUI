@@ -1,86 +1,21 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useTable, useSortBy, usePagination, useRowSelect, useExpanded, TableState, Row } from 'react-table';
+import React, { useState, useEffect } from 'react';
 import { HvHeader, HvButton } from '@hitachivantara/uikit-react-core';
 import { Tabs, Tab, Checkbox } from '@mui/material';
 import { CollapsibleIcons } from '../Navigations/CollapsibleIcons';
 import './Header.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import SparklineGraph from '../graphs/SparklineGraph';
-import { fetchCostBreakdown } from '../services/costService';
 import Cards from '../DashboardMain/Cards';
 import Footer from '../Footer/Footer';
+import { fetchCostBreakdown } from '../services/costService';
+import ReactTable from '../Table/Table';
+import SparklineGraph from '../graphs/SparklineGraph';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-  const [data, setData] = useState<any[]>([]);
   const [startDate, setStartDate] = useState('2024-03-01');
   const [endDate, setEndDate] = useState('2024-09-01');
   const [tabValue, setTabValue] = useState(0);
-
-
-  // Define columns for react-table
-  const columns = useMemo(
-    () => [
-      {
-        Header: ({ getToggleAllRowsSelectedProps }: { getToggleAllRowsSelectedProps: any }) => (
-          <div>
-            <Checkbox {...getToggleAllRowsSelectedProps()} />
-          </div>
-        ),
-        id: 'selection',
-        Cell: ({ row }: { row: any }) => (
-          <div>
-            <Checkbox {...row.getToggleRowSelectedProps()} />
-          </div>
-        ),
-      },
-      {
-        // Expandable column for service category
-        Header: 'Service category',
-        accessor: 'serviceCategory',
-        Cell: ({ row }: { row: any }) => (
-          <span {...row.getToggleRowExpandedProps()}>
-            {row.isExpanded ? '▼ ' : '▶ '}
-            {row.original.serviceCategory}
-          </span>
-        ),
-      },
-      { Header: 'Service name', accessor: 'services[0].serviceName' },
-      { Header: 'Sub-service name', accessor: 'services[0].chargeDescriptionName' }, 
-      { Header: 'Total cost (USD)', accessor: 'services[0].chargeDescriptionCost' },
-      { Header: 'Costs over time', accessor: 'services[0].graph' },
-    ],
-    []
-  );
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    prepareRow,
-    state,
-    nextPage,
-    previousPage,
-    canNextPage,
-    canPreviousPage,
-    pageOptions,
-    gotoPage,
-    pageCount,
-    setPageSize,
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: { pageIndex: 0, pageSize: 10 } as Partial<TableState<any>>,
-    },
-    useSortBy,
-    useExpanded,
-    usePagination,
-    useRowSelect
-  );
-
-  const { pageIndex, pageSize } = state as TableState<any> & { pageIndex: number; pageSize: number };
+  const [data, setData] = useState<any[]>([]);
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabValue(newValue);
@@ -128,7 +63,7 @@ function Header() {
         });
 
         // Convert the object to an array for react-table
-        setData(Object.values(transformedData)); // Update the data in state
+        setData(Object.values(transformedData));
       } else {
         console.error('Unexpected API response structure:', result);
       }
@@ -139,8 +74,7 @@ function Header() {
 
   useEffect(() => {
     launchInvestigation();
-  }, []);
-
+  }, [startDate, endDate]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '105vh', backgroundColor: 'white' }}>
@@ -153,7 +87,7 @@ function Header() {
 
         <div style={{ flex: isMenuOpen ? 1 : 1.2, padding: '16px', overflowY: 'auto', transition: 'flex 0.3s ease' }}>
           {/* Top Cards */}
-        <Cards />
+          <Cards />
 
           <h1 className="detailcost">Detailed Cloud Cost Breakdown</h1>
           <div className="dashboard-main" style={{ display: 'flex' }}>
@@ -187,89 +121,7 @@ function Header() {
                 <Tab label="By PoP service" />
                 <Tab label="By team" />
               </Tabs>
-
-
-              {/* Record count */}
-              <div className='records'>
-                <i className="fas fa-list" style={{ marginRight: '8px', color: '#1976d2' }}></i>
-                <strong>{data.length} records</strong>
-              </div>
-              {/* Table */}
-              <div className="table-container" style={{ overflow: 'auto', border: '1px solid #ddd', borderRadius: '8px' }}>
-                <table {...getTableProps()} style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    {headerGroups.map(headerGroup => (
-                      <tr {...headerGroup.getHeaderGroupProps()}>
-                        {headerGroup.headers.map(column => (
-                          <th {...column.getHeaderProps((column as any).getSortByToggleProps())} style={{ borderBottom: '2px solid #ddd', textAlign: 'left', padding: '8px' }}>
-                            {column.render('Header')}
-                            <span>
-                            <span>{column.isSorted ? (column.isSortedDesc ? '↑' : '↓') : ''}</span>
-                            </span>
-                          </th> 
-                        ))}
-                      </tr>
-                    ))}
-                  </thead>
-                  <tbody>
-                    {page.map((row: Row<object>) => {
-                      prepareRow(row);
-                      return (
-                        <React.Fragment key={row.id}>
-                          <tr {...row.getRowProps()}>
-                            {row.cells.map(cell => (
-                              <td {...cell.getCellProps()} style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>
-                                {cell.render('Cell')}
-                              </td>
-                            ))}
-                          </tr>
-                          {/* Expanded Row */}
-                          {(row as any).isExpanded ? (
-                            <tr>
-                              <td colSpan={columns.length}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                  <thead>
-                                    <tr>
-                                      <th>Service Name</th>
-                                      <th>Sub-Service Name</th>
-                                      <th>Total Cost (USD)</th>
-                                      <th>Costs Over Time</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {row.original.services.map((service, index) => (
-                                      <tr key={index}>
-                                        <td>{service.serviceName}</td>
-                                        <td>{service.chargeDescriptionName}</td>
-                                        <td>${service.chargeDescriptionCost}</td>
-                                        <td>{service.graph}</td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          ) : null}
-                        </React.Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              {/* Pagination Controls */}
-              <div className="pagination">
-                <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-                  Previous
-                </button>
-                <span>
-                  Page{' '}
-                  <strong>
-                    {pageIndex + 1} of {pageOptions.length}
-                  </strong>{' '}
-                </span>
-                <button onClick={() => nextPage()} disabled={!canNextPage}>Next</button>
-
-              </div>
+              <ReactTable data={data} />
             </div>
           </div>
         </div>
