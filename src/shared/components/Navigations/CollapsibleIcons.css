@@ -4,13 +4,11 @@
 }
 
 .hvVerticalNavigation {
-  color: white;
   width: 300px;
   min-height: 100%;
 }
 
 .hvVerticalNavigationHeader {
-  color: white;
   padding: 16px;
   font-size: 18px;
   font-weight: bold;

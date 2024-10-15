@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HvHeader, HvButton } from '@hitachivantara/uikit-react-core';
-import { Tabs, Tab, Checkbox } from '@mui/material';
+import { Tabs, Tab, Checkbox, CircularProgress } from '@mui/material';
 import { CollapsibleIcons } from '../Navigations/CollapsibleIcons';
 import './Header.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -16,6 +16,8 @@ function Header() {
   const [endDate, setEndDate] = useState('2024-09-01');
   const [tabValue, setTabValue] = useState(0);
   const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false); 
+  const [buttonDisabled, setButtonDisabled] = useState(false); 
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabValue(newValue);
@@ -23,7 +25,11 @@ function Header() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  // Function to fetch data from the API
   const launchInvestigation = async () => {
+    setLoading(true); // Start loading
+    setButtonDisabled(true); // Disable button
+
     try {
       const result = await fetchCostBreakdown(startDate, endDate);
 
@@ -37,7 +43,6 @@ function Header() {
       ) {
         const transformedData: any = {};
 
-        // Group data by service category
         result[0].data.serviceCategories.forEach((category: any) => {
           const categoryName = category.serviceCategory;
           if (!transformedData[categoryName]) {
@@ -62,19 +67,22 @@ function Header() {
           });
         });
 
-        // Convert the object to an array for react-table
         setData(Object.values(transformedData));
       } else {
         console.error('Unexpected API response structure:', result);
       }
     } catch (error) {
       console.error('Failed to fetch cost breakdown:', error);
+    } finally {
+      setLoading(false); 
+      setButtonDisabled(false); 
     }
   };
 
+  // Fetch data on page load using useEffect
   useEffect(() => {
-    launchInvestigation();
-  }, [startDate, endDate]);
+    launchInvestigation(); 
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '105vh', backgroundColor: 'white' }}>
@@ -94,7 +102,6 @@ function Header() {
             <aside className="filter-section" style={{ width: '25%', marginRight: '16px' }}>
               <h3 className='catTitle'>Categories</h3>
               {/* Filter checkboxes */}
-
               <ul style={{ listStyleType: 'none' }}>
                 <li><Checkbox defaultChecked /> SUBLowerEnvs001</li>
                 <li><Checkbox defaultChecked /> SUBMLPlayground</li>
@@ -107,13 +114,20 @@ function Header() {
                 <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="inputbox" />
                 <label>End date</label>
                 <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="inputbox" />
-                <HvButton variant="primary" color="primary" className='btninvest' onClick={launchInvestigation}>
-                  Launch investigation
+                <HvButton
+                  variant="primary"
+                  color="primary"
+                  className='btninvest'
+                  onClick={launchInvestigation}
+                  disabled={buttonDisabled} 
+                  style={{ opacity: buttonDisabled ? 0.6 : 1 }} 
+                >
+                  {buttonDisabled ? 'Loading...' : 'Launch investigation'}
                 </HvButton>
               </div>
             </aside>
 
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, position: 'relative' }}>
               <Tabs value={tabValue} onChange={handleTabChange} style={{ marginBottom: '16px' }}>
                 <Tab label="By cloud service" />
                 <Tab label="By model" />
@@ -121,7 +135,18 @@ function Header() {
                 <Tab label="By PoP service" />
                 <Tab label="By team" />
               </Tabs>
-              <ReactTable data={data} />
+
+              {/* Loader on top of the table */}
+              {loading && (
+                <div className='lodertable'>
+                  <CircularProgress />
+                </div>
+              )}
+
+              {/* Table with transparency when loading */}
+              <div style={{ opacity: loading ? 0.5 : 1, transition: 'opacity 0.3s ease' }}>
+                <ReactTable data={data} />
+              </div>
             </div>
           </div>
         </div>
