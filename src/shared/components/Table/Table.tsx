@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
-import { useTable, useSortBy, usePagination, useRowSelect, useExpanded, TableState } from 'react-table';
+import { useTable, useSortBy, usePagination, useRowSelect, useExpanded, TableState, Row, UseExpandedRowProps } from 'react-table';
 import { Checkbox } from '@mui/material';
 import './Table.css';
+
 
 interface Service {
     serviceName: string;
@@ -101,17 +102,19 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                     <tbody>
                         {page.map((row: Row<object>) => {
                             prepareRow(row);
+                            const rowProps = row.getRowProps(); // Get row props without destructuring key
+
                             return (
-                                <React.Fragment key={row.id}>
-                                    <tr {...row.getRowProps()}>
-                                        {row.cells.map(cell => (
+                                <React.Fragment key={row.id}> {/* Use row.id directly here as the key */}
+                                    <tr {...rowProps}> {/* Just pass rowProps here without modifying */}
+                                        {row.cells.map((cell) => (
                                             <td {...cell.getCellProps()} style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>
                                                 {cell.render('Cell')}
                                             </td>
                                         ))}
                                     </tr>
                                     {/* Expanded Row */}
-                                    {(row as any).isExpanded ? (
+                                    {(row as Row<Data> & UseExpandedRowProps<Data>).isExpanded ? (
                                         <tr>
                                             <td colSpan={columns.length}>
                                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -124,8 +127,8 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {row.original.services.map((service, index) => (
-                                                            <tr key={index}>
+                                                        {(row.original as Data).services.map((service: Service, index) => (
+                                                            <tr key={index}> {/* Ensure a unique key for each service row */}
                                                                 <td>{service.serviceName}</td>
                                                                 <td>{service.chargeDescriptionName}</td>
                                                                 <td>${service.chargeDescriptionCost}</td>
@@ -141,6 +144,8 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                             );
                         })}
                     </tbody>
+
+
                 </table>
             </div>
             {/* Pagination Controls */}
