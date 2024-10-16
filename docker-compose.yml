@@ -8,6 +8,7 @@ services:
         - GPR_TOKEN=${GPR_TOKEN}
     volumes:
       - ./src:/app/src
+       command: npm run dev
     ports:
       - 3000:3000
       - 3001:3001 # for HMR
