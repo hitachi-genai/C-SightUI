@@ -52,7 +52,7 @@ const SparklineGraph: React.FC<SparklineGraphProps> = ({ data }) => {
       hideDelay: 0,
       outside: true,
       shared: true,
-      formatter: function () {
+      formatter: function (this: Highcharts.TooltipFormatterContextObject): string {
         return `<b>${this.y}</b>`; // Only shows the y value, no "Series 1"
       }
     },

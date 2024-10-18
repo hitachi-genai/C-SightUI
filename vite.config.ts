@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => {
       },
       server: {
         deps: { inline: ['@hitachivantara/uikit-react-core', '@hitachi-genai/uikit-core'] },
+        hmr: false
       },
     },
     server: {

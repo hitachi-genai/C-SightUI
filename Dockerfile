@@ -2,13 +2,16 @@
 FROM node:18-alpine
 
 # Set the working directory inside the container
-WORKDIR /src
+WORKDIR /app
+
+# Copy the .npmrc file to the container for authentication
+COPY .npmrc .npmrc
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
 # Install any needed dependencies
-RUN npm i
+RUN npm i --legacy-peer-deps
 
 # Copy the rest of the application to the working directory
 COPY . .

@@ -1,5 +1,5 @@
-import { HvContainer, theme } from '@hitachivantara/uikit-react-core';
-import { useTranslation } from 'react-i18next';
+import { HvContainer } from '@hitachivantara/uikit-react-core';
+// import { useTranslation } from 'react-i18next';
 
 import { Header } from '../Header';
 
@@ -9,14 +9,10 @@ import { Header } from '../Header';
  */
 function TempComponent() {
   // const [count, setCount] = useState<number>(0);
-  const { t, i18n } = useTranslation();
+  //const { i18n } = useTranslation();
   // const onClick = () => {
   //   setCount((prevState) => prevState + 1);
   // };
-  const changeLanguage = () => {
-    const newLanguage = i18n.language === 'en' ? 'ja' : 'en';
-    i18n.changeLanguage(newLanguage);
-  };
 
   return (
     <div style={{ height: '50vh' }}>

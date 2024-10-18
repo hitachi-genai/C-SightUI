@@ -60,7 +60,7 @@ export const CollapsibleIcons: React.FC<CollapsibleIconsProps> = ({ isOpen, togg
           style={{ flexGrow: 1 }}
           defaultExpanded
           selected={value}
-          onChange={(event, data) => setValue(data.id)}
+          onChange={(_event, data) => setValue(data.id)}
           data={navigationData}
         />
         <HvVerticalNavigationActions>

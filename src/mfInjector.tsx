@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 
-import App from './App/App';
+import App from './app/App';
 
 function mfInjector(parentElementId: string) {
   const container = document.getElementById(parentElementId);

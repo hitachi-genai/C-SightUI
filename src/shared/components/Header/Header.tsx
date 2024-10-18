@@ -19,7 +19,7 @@ function Header() {
   const [loading, setLoading] = useState(false); 
   const [buttonDisabled, setButtonDisabled] = useState(false); 
 
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleTabChange = (_event: React.ChangeEvent<{}>, newValue: number) => {
     setTabValue(newValue);
   };
 

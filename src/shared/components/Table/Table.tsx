@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { useTable, useSortBy, usePagination, useRowSelect, useExpanded, TableState, Row, UseExpandedRowProps } from 'react-table';
+import { TableInstance, Row, UsePaginationInstanceProps, UseSortByInstanceProps, UseExpandedRowProps, TableState, useTable, useSortBy, useExpanded, usePagination, useRowSelect, Column } from 'react-table';
+
 import { Checkbox } from '@mui/material';
 import './Table.css';
 
@@ -17,14 +18,10 @@ interface Data {
 }
 
 const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
-    const columns = useMemo(
+    const columns: Column<object>[] = useMemo(
         () => [
             {
-                Header: ({ getToggleAllRowsSelectedProps }: { getToggleAllRowsSelectedProps: any }) => (
-                    <div>
-                        <Checkbox {...getToggleAllRowsSelectedProps()} />
-                    </div>
-                ),
+                Header: 'Select',
                 id: 'selection',
                 Cell: ({ row }: { row: any }) => (
                     <div>
@@ -42,17 +39,33 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                     </span>
                 ),
             },
-            { Header: 'Service name', accessor: 'services[0].serviceName' },
-            { Header: 'Sub-service name', accessor: 'services[0].chargeDescriptionName' },
-            { Header: 'Total cost (USD)', accessor: 'services[0].chargeDescriptionCost' },
-            { Header: 'Costs over time', accessor: 'services[0].graph' },
+            {
+                Header: 'Service name',
+                accessor: 'services[0].serviceName',
+                id: 'serviceName',
+            },
+            {
+                Header: 'Sub-service name',
+                accessor: 'services[0].chargeDescriptionName',
+                id: 'subServiceName',
+            },
+            {
+                Header: 'Total cost (USD)',
+                accessor: 'services[0].chargeDescriptionCost',
+                id: 'totalCost',
+            },
+            {
+                Header: 'Costs over time',
+                accessor: 'services[0].graph',
+                id: 'costsOverTime',
+            },
         ],
         []
     );
-
+    
     const {
         getTableProps,
-        getTableBodyProps,
+        // getTableBodyProps,
         headerGroups,
         page,
         prepareRow,
@@ -62,6 +75,7 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
         canNextPage,
         canPreviousPage,
         pageOptions,
+        
     } = useTable(
         {
             columns,
@@ -72,7 +86,7 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
         useExpanded,
         usePagination,
         useRowSelect
-    );
+    ) as TableInstance<object> & UsePaginationInstanceProps<object> & UseSortByInstanceProps<object>;
 
     const { pageIndex } = state as TableState<any> & { pageIndex: number };
 
@@ -92,7 +106,8 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                                     <th {...column.getHeaderProps((column as any).getSortByToggleProps())} style={{ borderBottom: '2px solid #ddd', textAlign: 'left', padding: '8px' }}>
                                         {column.render('Header')}
                                         <span>
-                                            <span>{column.isSorted ? (column.isSortedDesc ? '↑' : '↓') : ''}</span>
+                                        <span>{(column as any).isSorted ? ((column as any).isSortedDesc ? '↑' : '↓') : ''}</span>
+
                                         </span>
                                     </th>
                                 ))}

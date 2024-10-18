@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import CloudCostsLineChart from '../graphs/CloudCostsLineChart';
 import ServiceCostsBarChart from '../graphs/ServiceCostsBarChart';
 import { fetchTotalIncurredCost } from '../services/cloudCostService';
-import { fetchTotalIncurredCostAllTime, fetchTotalIncurredCostLastMonth } from '../services/incurredCost';
+import { fetchTotalIncurredCostAllTime } from '../services/incurredCost';
 import './cards.css';
 
 const Cards = () => {
