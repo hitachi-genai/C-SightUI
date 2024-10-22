@@ -32,10 +32,12 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                 Header: 'Service category',
                 accessor: 'serviceCategory',
                 Cell: ({ row }: { row: any }) => (
-                    <span {...row.getToggleRowExpandedProps()} style={{ cursor: 'pointer', textTransform: 'none' }}>
+                    <span {...row.getToggleRowExpandedProps()} 
+                    style={{ cursor: 'pointer', textTransform: 'none' ,whiteSpace: 'normal', wordWrap: 'break-word'}}>
                         {row.isExpanded ? '▼ ' : '▶ '}
                         {row.original.serviceCategory
                             .toLowerCase()
+                            .replace(/_/g, ' ')
                             .replace(/\b\w/g, (char: string) => char.toUpperCase())}
                     </span>
                 ),

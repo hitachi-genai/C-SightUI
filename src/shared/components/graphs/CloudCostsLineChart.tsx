@@ -1,21 +1,20 @@
-import { blue, orange, red } from '@mui/material/colors';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 interface CloudCostsLineChartProps {
-  incurredCosts: { date: string; incurredCost: number }[]; // totalCost can be a number or null
+  incurredCosts: { date: string; incurredCost: number }[];
 }
 const CloudCostsLineChart : React.FC<CloudCostsLineChartProps> = ({ incurredCosts }) => {
   const chartData = incurredCosts.map(item => ({
-    x: new Date(item.date).getTime(), // Convert date to timestamp
-    y: item.incurredCost,
+    x: new Date(item.date).getTime(), 
+    y: Math.floor(item.incurredCost), 
   }));
   const options = {
     chart: {
       type: 'area',
       backgroundColor: null,
-      height: 60,
-      width: 160, // adjust width to match the style you want
+      height: 80,
+      width: 200, 
     },
     title: {
       text: null,
@@ -25,12 +24,13 @@ const CloudCostsLineChart : React.FC<CloudCostsLineChartProps> = ({ incurredCost
     },
     xAxis: {
       visible: false,
+      type: 'datetime'
     },
     yAxis: {
       visible: false,
     },
     legend: {
-      enabled: false, // Disable legend
+      enabled: false, 
     },
     tooltip: {
       shadow: true,
@@ -39,7 +39,7 @@ const CloudCostsLineChart : React.FC<CloudCostsLineChartProps> = ({ incurredCost
     series: [
       {
         data: chartData,
-        color: '#e74c3c',  
+        color: '#FFFFFF',  
         marker: {
           enabled: true,
           radius: 3,

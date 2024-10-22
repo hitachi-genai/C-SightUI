@@ -1,18 +1,17 @@
-import React from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
-interface ServiceCostGraphProps {
-  data: number[];
+interface ServiceCostsBarChartProps {
+  categories: string[]; 
+  data: number[];  
 }
-
-const ServiceCostsBarChart :React.FC<ServiceCostGraphProps> = ({ data }) => {
+const ServiceCostsBarChart: React.FC<ServiceCostsBarChartProps> = ({ categories, data }) => {
   const options = {
     chart: {
       type: 'column',
       backgroundColor: null,
-      height: 60,
-      width: 160,
+      height: 80,
+      width: 200,
     },
     title: {
       text: null,
@@ -21,12 +20,19 @@ const ServiceCostsBarChart :React.FC<ServiceCostGraphProps> = ({ data }) => {
       enabled: false,
     },
     xAxis: {
-      visible: false,
-      categories: ['Compute', 'Storage', 'Networking', 'Management and Governance', 'Other'],
+      visible: false, 
+      categories: categories,
     },
     yAxis: {
       visible: false,
     },
+    plotOptions: {
+      column: {
+        pointPadding: 0.2,   
+        borderWidth: 4,     
+      }
+    },
+    
     tooltip: {
       useHTML: true,
       headerFormat: '',
@@ -47,7 +53,7 @@ const ServiceCostsBarChart :React.FC<ServiceCostGraphProps> = ({ data }) => {
     series: [
       {
         data: data, 
-        color: '#e74c3c',
+        color: '#FFFFFF',
         borderRadius: 3,
       },
     ],

@@ -10,11 +10,11 @@ import SparklineGraph from '../../shared/components/graphs/SparklineGraph';
 import { useQuery, useMutation } from 'react-query';
 
 function Header() {
-  const [startDate, setStartDate] = useState('2024-03-01');
-  const [endDate, setEndDate] = useState('2024-09-01');
+  const [startDate, setStartDate] = useState('2024-01-01');
+  const [endDate, setEndDate] = useState('2024-10-01');
   const [tabValue, setTabValue] = useState(0);
   const [data, setData] = useState<any[]>([]);
-  const [buttonDisabled, setButtonDisabled] = useState(false); 
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   const handleTabChange = (_event: React.ChangeEvent<{}>, newValue: number) => {
     setTabValue(newValue);
@@ -36,11 +36,11 @@ function Header() {
           transformedData[categoryName].services.push({
             serviceName: service.serviceName,
             chargeDescriptionName: charge.chargeDescriptionName,
-            chargeDescriptionCost: parseFloat(charge.chargeDescriptionCost).toFixed(2),
+            chargeDescriptionCost: parseFloat(charge.chargeDescriptionCost).toFixed(0),
             graph: (
               <SparklineGraph
-                data={charge.incurredCostsByTimeUnit.map((cost: { incurredCost: number }) => cost.incurredCost)}
-              />
+              data={charge.incurredCostsByTimeUnit.map((cost: { incurredCost: number }) => Math.round(cost.incurredCost))}
+            />
             ),
           });
         });
@@ -113,8 +113,8 @@ function Header() {
                   color="primary"
                   className='btninvest'
                   onClick={launchInvestigation}
-                  disabled={buttonDisabled} 
-                  style={{ opacity: buttonDisabled ? 0.6 : 1 }} 
+                  disabled={buttonDisabled}
+                  style={{ opacity: buttonDisabled ? 0.6 : 1 }}
                 >
                   {buttonDisabled ? 'Loading...' : 'Launch investigation'}
                 </HvButton>

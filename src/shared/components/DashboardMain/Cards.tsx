@@ -35,6 +35,21 @@ const Cards = () => {
     return 0;
   })();
 
+ // Function to sort the service categories by incurred cost in descending order
+ const getSortedServiceData = (serviceCategories: any) => {
+  if (!serviceCategories || !Array.isArray(serviceCategories)) return { categories: [], data: [] };
+
+  const sortedData = [...serviceCategories].sort((a, b) => b.incurredCost - a.incurredCost); // Sort by incurredCost descending
+  const categories = sortedData.map(category => category.serviceCategory);
+  const data = sortedData.map(category => Math.round(category.incurredCost)); // Round incurredCost to nearest whole number
+  
+  return { categories, data };
+};
+
+
+// Get sorted service data for all-time and last month
+const { categories: allTimeCategories, data: allTimeServiceData } = getSortedServiceData(allTimeCostData?.[0]?.data?.serviceCategories);
+const { categories: lastMonthCategories, data: lastMonthServiceData } = getSortedServiceData(lastMonthCostData?.[0]?.data?.serviceCategories);
 
 
   // Handle errors for API calls
@@ -58,8 +73,8 @@ const Cards = () => {
         <div>
           <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>All Time Service Costs | Max Compute</h3>
           <p>${maxIncurredCostAllTime.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-          <ServiceCostsBarChart data={[20, 19, 18, 16, 10]}  />
-          <span>↔ {maxIncurredCostAllTime.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} Cost range across service categories</span>
+          <ServiceCostsBarChart categories={allTimeCategories} data={allTimeServiceData} />
+          <span>↔ {Math.max(...allTimeServiceData).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} Cost range across service categories</span>
         </div>
         <i className="fas fa-magnifying-glass-dollar" style={{ marginLeft: '8px', fontSize: '80px', color: '#white', marginTop: '-34%' }}></i>
       </div>
@@ -68,8 +83,8 @@ const Cards = () => {
         <div>
           <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>Last Month Service Costs | Max Compute</h3>
           <p>${LastMonthmaxIncurredCost.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p> {/* Updated to use last month cost */}
-          <ServiceCostsBarChart data={[20, 19, 18, 16, 10]} />
-          <span>↔ ${LastMonthmaxIncurredCost.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} Cost range across service categories</span> {/* Adjust this as needed */}
+          <ServiceCostsBarChart categories={lastMonthCategories} data={lastMonthServiceData} />
+          <span>↔ ${Math.max(...lastMonthServiceData).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} Cost range across service categories</span>
         </div>
         <i className="fas fa-calendar-day" style={{ marginLeft: '8px', fontSize: '80px', color: '#white', marginTop: '-34%' }}></i>
       </div>
