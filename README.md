@@ -125,3 +125,11 @@ Translation is done via react i18next library https://react.i18next.com.
 2. Import corresponding files from en locale into `src/@types/i18next.d.ts`.
 3. Add imported namespace to `resources` array. 
 
+### To access project from local
+1. Sign up and login into Github.
+2. Request devops team for complete access
+3. Git clone project repo
+4. Generate token from Github-> Developer settings-> Token classic
+5. replace the token from npmrc
+6. npm install
+7. npm run dev
