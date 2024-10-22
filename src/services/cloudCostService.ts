@@ -1,7 +1,7 @@
 export const fetchTotalIncurredCost  = async () => {
     const payload = {
-      chargePeriodStart: '2024-03-01',
-      chargePeriodEnd: '2024-09-30',
+      chargePeriodStart: '2024-01-01',
+      chargePeriodEnd: '2024-10-01',
       periodicity: 'monthly',
       subscriptionIds: null,
       cspProvider: null,

@@ -33,6 +33,8 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@hitachi-genai/uikit-core": "^1.0.1",
     "@hitachivantara/uikit-react-core": "^5.41.1",
     "@mui/material": "^5.15.3",
@@ -47,8 +49,10 @@
     "react-dom": "^18.2.0",
     "react-highcharts": "^16.1.0",
     "react-i18next": "^13.5.0",
+    "react-query": "^3.39.3",
     "react-router-dom": "^6.21.1",
-    "react-table": "^7.8.0"
+    "react-table": "^7.8.0",
+    "vis-timeline": "^7.7.3"
   },
   "devDependencies": {
     "@originjs/vite-plugin-federation": "^1.3.3",

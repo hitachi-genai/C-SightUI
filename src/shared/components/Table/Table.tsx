@@ -4,7 +4,6 @@ import { TableInstance, Row, UsePaginationInstanceProps, UseSortByInstanceProps,
 import { Checkbox } from '@mui/material';
 import './Table.css';
 
-
 interface Service {
     serviceName: string;
     chargeDescriptionName: string;
@@ -33,9 +32,11 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                 Header: 'Service category',
                 accessor: 'serviceCategory',
                 Cell: ({ row }: { row: any }) => (
-                    <span {...row.getToggleRowExpandedProps()} style={{ cursor: 'pointer' }}>
+                    <span {...row.getToggleRowExpandedProps()} style={{ cursor: 'pointer', textTransform: 'none' }}>
                         {row.isExpanded ? '▼ ' : '▶ '}
-                        {row.original.serviceCategory}
+                        {row.original.serviceCategory
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char: string) => char.toUpperCase())}
                     </span>
                 ),
             },
@@ -62,10 +63,9 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
         ],
         []
     );
-    
+
     const {
         getTableProps,
-        // getTableBodyProps,
         headerGroups,
         page,
         prepareRow,
@@ -75,12 +75,11 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
         canNextPage,
         canPreviousPage,
         pageOptions,
-        
     } = useTable(
         {
             columns,
             data,
-            initialState: { pageIndex: 0, pageSize: 10 } as Partial<TableState<any>>,
+            initialState: { pageIndex: 0, pageSize: 10, sortBy: [{ id: 'totalCost', desc: true }] } as Partial<TableState<any>>,
         },
         useSortBy,
         useExpanded,
@@ -92,11 +91,6 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
 
     return (
         <>
-            <div className='records'>
-                <i className="fas fa-list" style={{ marginRight: '8px', color: '#1976d2' }}></i>
-                <strong>{data.length} records</strong>
-            </div>
-            {/* Table */}
             <div className="table-container" style={{ overflow: 'auto', border: '1px solid #ddd', borderRadius: '8px' }}>
                 <table {...getTableProps()} style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
@@ -105,10 +99,7 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                                 {headerGroup.headers.map(column => (
                                     <th {...column.getHeaderProps((column as any).getSortByToggleProps())} style={{ borderBottom: '2px solid #ddd', textAlign: 'left', padding: '8px' }}>
                                         {column.render('Header')}
-                                        <span>
                                         <span>{(column as any).isSorted ? ((column as any).isSortedDesc ? '↑' : '↓') : ''}</span>
-
-                                        </span>
                                     </th>
                                 ))}
                             </tr>
@@ -117,11 +108,11 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                     <tbody>
                         {page.map((row: Row<object>) => {
                             prepareRow(row);
-                            const rowProps = row.getRowProps(); // Get row props without destructuring key
+                            const rowProps = row.getRowProps(); 
 
                             return (
-                                <React.Fragment key={row.id}> {/* Use row.id directly here as the key */}
-                                    <tr {...rowProps}> {/* Just pass rowProps here without modifying */}
+                                <React.Fragment key={row.id}> 
+                                    <tr {...rowProps}> 
                                         {row.cells.map((cell) => (
                                             <td {...cell.getCellProps()} style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>
                                                 {cell.render('Cell')}
@@ -142,8 +133,11 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {(row.original as Data).services.map((service: Service, index) => (
-                                                            <tr key={index}> {/* Ensure a unique key for each service row */}
+                                                        {/* Render unique services only */}
+                                                        {(row.original as Data).services.filter((service: Service, index: number, self: Service[]) =>
+                                                            index === self.findIndex(s => s.serviceName === service.serviceName)
+                                                        ).map((service: Service) => (
+                                                            <tr key={`${service.serviceName}-${service.chargeDescriptionName}`}> {/* Use a unique key for each service */}
                                                                 <td>{service.serviceName}</td>
                                                                 <td>{service.chargeDescriptionName}</td>
                                                                 <td>${service.chargeDescriptionCost}</td>
@@ -159,8 +153,6 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                             );
                         })}
                     </tbody>
-
-
                 </table>
             </div>
             {/* Pagination Controls */}
@@ -175,7 +167,6 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                     </strong>{' '}
                 </span>
                 <button onClick={() => nextPage()} disabled={!canNextPage}>Next</button>
-
             </div>
         </>
     );

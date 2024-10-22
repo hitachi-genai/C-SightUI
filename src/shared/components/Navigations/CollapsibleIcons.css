@@ -14,23 +14,25 @@
   font-weight: bold;
 }
 
+.HvVerticalNavigationTreeViewItem-selected>.hv-1kxd4h2{background:var(--uikit-colors-atmo3);border-left:4px solid #1976d2;}
+
 .hvVerticalNavigationTree .hvVerticalNavigationTreeItem {
   color: white;
 }
 
 .hvVerticalNavigationTree .hvVerticalNavigationTreeItem:hover {
-  background-color: #1e282c !important;
+  background-color: #1976d2 !important;
 }
 
 .hvVerticalNavigationTree .hvVerticalNavigationTreeItem-selected {
-  background-color: #1e282c !important;
+  background-color: #1976d2 !important;
 }
 
 /* Styling for actions at the bottom (Profile, Logout) */
 .hvVerticalNavigationActions {
-  background-color: #222d32 !important;
+  background-color: #1976d2 !important;
   padding: 16px;
-  border-top: 1px solid #1e282c !important;
+  border-top: 1px solid #1976d2 !important;
 }
 
 .hvVerticalNavigationActions .hvVerticalNavigationAction {
@@ -38,5 +40,5 @@
 }
 
 .hvVerticalNavigationActions .hvVerticalNavigationAction:hover {
-  background-color: #1e282c !important
+  background-color: #1976d2 !important
 }

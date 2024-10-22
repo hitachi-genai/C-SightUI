@@ -1,107 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import { HvHeader, HvButton } from '@hitachivantara/uikit-react-core';
+import { HvButton } from '@hitachivantara/uikit-react-core';
 import { Tabs, Tab, Checkbox, CircularProgress } from '@mui/material';
-import { CollapsibleIcons } from '../Navigations/CollapsibleIcons';
 import './Header.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import Cards from '../DashboardMain/Cards';
-import Footer from '../Footer/Footer';
-import { fetchCostBreakdown } from '../services/costService';
-import ReactTable from '../Table/Table';
-import SparklineGraph from '../graphs/SparklineGraph';
+import Cards from '../../shared/components/DashboardMain/Cards';
+import { fetchCostBreakdown } from '../../services/costService';
+import ReactTable from '../../shared/components/Table/Table';
+import SparklineGraph from '../../shared/components/graphs/SparklineGraph';
+import { useQuery, useMutation } from 'react-query';
 
 function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [startDate, setStartDate] = useState('2024-03-01');
   const [endDate, setEndDate] = useState('2024-09-01');
   const [tabValue, setTabValue] = useState(0);
   const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false); 
   const [buttonDisabled, setButtonDisabled] = useState(false); 
 
   const handleTabChange = (_event: React.ChangeEvent<{}>, newValue: number) => {
     setTabValue(newValue);
   };
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-  // Function to fetch data from the API
-  const launchInvestigation = async () => {
-    setLoading(true); // Start loading
-    setButtonDisabled(true); // Disable button
-
-    try {
-      const result = await fetchCostBreakdown(startDate, endDate);
-
-      console.log('API Response:', result);
-
-      if (
-        Array.isArray(result) &&
-        result.length > 0 &&
-        result[0].data &&
-        result[0].data.serviceCategories
-      ) {
-        const transformedData: any = {};
-
-        result[0].data.serviceCategories.forEach((category: any) => {
-          const categoryName = category.serviceCategory;
-          if (!transformedData[categoryName]) {
-            transformedData[categoryName] = {
-              serviceCategory: categoryName,
-              services: [],
-            };
-          }
-          category.serviceNames.forEach((service: any) => {
-            service.chargeDescriptions.forEach((charge: any) => {
-              transformedData[categoryName].services.push({
-                serviceName: service.serviceName,
-                chargeDescriptionName: charge.chargeDescriptionName,
-                chargeDescriptionCost: parseFloat(charge.chargeDescriptionCost).toFixed(2),
-                graph: (
-                  <SparklineGraph
-                    data={charge.incurredCostsByTimeUnit.map((cost: { incurredCost: number }) => cost.incurredCost)}
-                  />
-                ),
-              });
-            });
+  // Function to transform the API response data
+  const transformData = (result: any) => {
+    const transformedData: any = {};
+    result[0].data.serviceCategories.forEach((category: any) => {
+      const categoryName = category.serviceCategory;
+      if (!transformedData[categoryName]) {
+        transformedData[categoryName] = {
+          serviceCategory: categoryName,
+          services: [],
+        };
+      }
+      category.serviceNames.forEach((service: any) => {
+        service.chargeDescriptions.forEach((charge: any) => {
+          transformedData[categoryName].services.push({
+            serviceName: service.serviceName,
+            chargeDescriptionName: charge.chargeDescriptionName,
+            chargeDescriptionCost: parseFloat(charge.chargeDescriptionCost).toFixed(2),
+            graph: (
+              <SparklineGraph
+                data={charge.incurredCostsByTimeUnit.map((cost: { incurredCost: number }) => cost.incurredCost)}
+              />
+            ),
           });
         });
-
-        setData(Object.values(transformedData));
-      } else {
-        console.error('Unexpected API response structure:', result);
-      }
-    } catch (error) {
-      console.error('Failed to fetch cost breakdown:', error);
-    } finally {
-      setLoading(false); 
-      setButtonDisabled(false); 
-    }
+      });
+    });
+    return Object.values(transformedData);
   };
 
-  // Fetch data on page load using useEffect
+  // Fetch data on page load using useQuery
+  const { data: initialData, isLoading } = useQuery(
+    ['costBreakdown', startDate, endDate],
+    () => fetchCostBreakdown(startDate, endDate).then(transformData),
+    {
+      enabled: true, // Always fetch on mount
+    }
+  );
+
+  // Update local state with fetched data
   useEffect(() => {
-    launchInvestigation(); 
-  }, []);
+    if (initialData) {
+      setData(initialData);
+    }
+  }, [initialData]);
+
+  // Launch investigation using useMutation
+  const mutation = useMutation(async () => {
+    setButtonDisabled(true); // Disable button
+
+    const result = await fetchCostBreakdown(startDate, endDate);
+    return transformData(result);
+  }, {
+    onSuccess: (data) => {
+      setData(data); // Update state with new data
+      setButtonDisabled(false); // Re-enable button
+    },
+    onError: () => {
+      console.error('Failed to fetch cost breakdown');
+      setButtonDisabled(false); // Re-enable button in case of error
+    },
+  });
+
+  const launchInvestigation = () => {
+    mutation.mutate(); // Trigger the mutation
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '105vh', backgroundColor: 'white' }}>
-      <HvHeader position="relative" style={{ backgroundColor: '#1976d2' }}>
-        <h1 className="logo">C-Sight</h1>
-      </HvHeader>
-
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <CollapsibleIcons isOpen={isMenuOpen} toggleMenu={toggleMenu} />
-
-        <div style={{ flex: isMenuOpen ? 1 : 1.2, padding: '16px', overflowY: 'auto', transition: 'flex 0.3s ease' }}>
-          {/* Top Cards */}
+        <div style={{ padding: '16px', overflowY: 'auto', transition: 'flex 0.3s ease' }}>
           <Cards />
 
           <h1 className="detailcost">Detailed Cloud Cost Breakdown</h1>
           <div className="dashboard-main" style={{ display: 'flex' }}>
             <aside className="filter-section" style={{ width: '25%', marginRight: '16px' }}>
               <h3 className='catTitle'>Categories</h3>
-              {/* Filter checkboxes */}
               <ul style={{ listStyleType: 'none' }}>
                 <li><Checkbox defaultChecked /> SUBLowerEnvs001</li>
                 <li><Checkbox defaultChecked /> SUBMLPlayground</li>
@@ -137,21 +131,20 @@ function Header() {
               </Tabs>
 
               {/* Loader on top of the table */}
-              {loading && (
+              {mutation.isLoading && (
                 <div className='lodertable'>
                   <CircularProgress />
                 </div>
               )}
 
               {/* Table with transparency when loading */}
-              <div style={{ opacity: loading ? 0.5 : 1, transition: 'opacity 0.3s ease' }}>
+              <div style={{ opacity: mutation.isLoading ? 0.5 : 1, transition: 'opacity 0.3s ease' }}>
                 <ReactTable data={data} />
               </div>
             </div>
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

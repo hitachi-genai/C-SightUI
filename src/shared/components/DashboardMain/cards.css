@@ -6,10 +6,11 @@
 }
 
 .card {
-    background-color: #f5f5f5;
+    background-color: rgb(25, 118, 210);
     padding: 16px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: white;
 }
 
 .card h3 {

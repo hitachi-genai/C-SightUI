@@ -1,7 +1,7 @@
 import { HvContainer } from '@hitachivantara/uikit-react-core';
 // import { useTranslation } from 'react-i18next';
 
-import { Header } from '../Header';
+import { Header } from '../../../components/Header';
 
 /**
  * TempComponent component.

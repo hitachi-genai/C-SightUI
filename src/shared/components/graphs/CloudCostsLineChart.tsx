@@ -1,3 +1,4 @@
+import { blue, orange, red } from '@mui/material/colors';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
@@ -32,13 +33,13 @@ const CloudCostsLineChart : React.FC<CloudCostsLineChartProps> = ({ incurredCost
       enabled: false, // Disable legend
     },
     tooltip: {
+      shadow: true,
       pointFormat: 'Cost: <b>{point.y}</b>',
     },
     series: [
       {
         data: chartData,
-        color: '#00bff3',
-        fillOpacity: 0.2,
+        color: '#e74c3c',  
         marker: {
           enabled: true,
           radius: 3,
