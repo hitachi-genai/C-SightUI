@@ -38,4 +38,22 @@ describe('Renders main page correctly', async () => {
       const timeline =  screen.getByText(/GenAI Project Timeline/i);
       expect(timeline).toBeInTheDocument();
   }); 
+
+  test('Should show text Budget burn rate', () => {
+      render(<App />);
+      const burnRate =  screen.getByText(/Budget burn rate: Total costs/i);
+      expect(burnRate).toBeInTheDocument();
+  }); 
+  test('Should show text Expected costs', () => {
+      render(<App />);
+      const expectedCosts =  screen.getByText(/Expected costs/i);
+      expect(expectedCosts).toBeInTheDocument();
+  }); 
+
+  test('Should show text Observed costs', () => {
+      render(<App />);
+      const observedCosts =  screen.getByText(/Observed costs/i);
+      expect(observedCosts).toBeInTheDocument();
+  }); 
+  
 });
