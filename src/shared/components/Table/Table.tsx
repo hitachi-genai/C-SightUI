@@ -3,6 +3,7 @@ import { TableInstance, Row, UsePaginationInstanceProps, UseSortByInstanceProps,
 
 import { Checkbox } from '@mui/material';
 import './Table.css';
+import SparklineGraph from '../graphs/SparklineGraph';
 
 interface Service {
     serviceName: string;
@@ -32,8 +33,8 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                 Header: 'Service category',
                 accessor: 'serviceCategory',
                 Cell: ({ row }: { row: any }) => (
-                    <span {...row.getToggleRowExpandedProps()} 
-                    style={{ cursor: 'pointer', textTransform: 'none' ,whiteSpace: 'normal', wordWrap: 'break-word'}}>
+                    <span  {...row.getToggleRowExpandedProps()}
+                        style={{ cursor: 'pointer', textTransform: 'none', whiteSpace: 'normal', wordWrap: 'break-word',fontWeight: 'bolder'  }}>
                         {row.isExpanded ? '▼ ' : '▶ '}
                         {row.original.serviceCategory
                             .toLowerCase()
@@ -44,24 +45,78 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
             },
             {
                 Header: 'Service name',
-                accessor: 'services[0].serviceName',
+                accessor: 'services',
                 id: 'serviceName',
+                Cell: ({ row }: { row: any }) => {
+                    const uniqueServiceNames = Array.from(new Set(row.original.services.map((service: Service) => service.serviceName)));
+                    const serviceNames = uniqueServiceNames.join(', ');
+                    return <span style={{ fontWeight: 'bolder' }}>{serviceNames}</span>;
+                },
+                
+                // Cell: ({ row }: { row: any }) => {
+                //     const serviceNames = row.original.services.map((service: Service) => service.serviceName).join(', ');
+                //     return <span style={{fontWeight:'bolder'}}>{serviceNames}</span>;
+                // },
             },
             {
                 Header: 'Sub-service name',
-                accessor: 'services[0].chargeDescriptionName',
+                accessor: 'services',
                 id: 'subServiceName',
+                Cell: ({ row }: { row: any }) => {
+                    const subServiceCount = row.original.services.length;
+                    return <span style={{fontWeight:'bolder'}}>{subServiceCount} sub-services</span>;
+                },
             },
             {
                 Header: 'Total cost (USD)',
-                accessor: 'services[0].chargeDescriptionCost',
+                accessor: 'services',
                 id: 'totalCost',
+                Cell: ({ row }: { row: any }) => {
+                    const totalCost = row.original.services.reduce((sum: number, service: Service) => {
+                        return sum + Number(service.chargeDescriptionCost) || 0; 
+                    }, 0);
+                    const formattedTotalCost = totalCost.toFixed(0);
+                    return <span style={{fontWeight:'bolder'}}>${formattedTotalCost}</span>;
+                },
+                sortType: (rowA: any, rowB: any) => {
+                    const totalA = rowA.original.services.reduce((sum: number, service: Service) => sum + Number(service.chargeDescriptionCost) || 0, 0);
+                    const totalB = rowB.original.services.reduce((sum: number, service: Service) => sum + Number(service.chargeDescriptionCost) || 0, 0);
+                    return totalA - totalB; 
+                },
             },
             {
                 Header: 'Costs over time',
                 accessor: 'services[0].graph',
                 id: 'costsOverTime',
+                Cell: ({ row }: { row: any }) => {
+                   
+                    const aggregatedData = row.original.services.reduce((acc: any[], service: Service) => {
+                        service.graph.props.data.forEach((dataPoint: { date: string; incurredCost: number }) => {
+                            const existingDataPoint = acc.find((dp) => dp.date === dataPoint.date);
+                            if (existingDataPoint) {
+                                existingDataPoint.incurredCost += dataPoint.incurredCost;
+                            } else {
+                                acc.push({ date: dataPoint.date, incurredCost: dataPoint.incurredCost });
+                            }
+                        });
+                        return acc;
+                    }, []);
+            
+                    // Sort aggregated data by date in ascending order
+                    aggregatedData.sort((a: { date: string | number | Date; }, b: { date: string | number | Date; }) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            
+                    // Calculate the total cost
+                    const totalCost = aggregatedData.reduce((sum: number, dataPoint: { incurredCost: number }) => sum + dataPoint.incurredCost, 0);
+            
+                    return (
+                        <div>
+                            {/* <span>${totalCost.toFixed(2)}</span> */}
+                            <SparklineGraph data={aggregatedData} />
+                        </div>
+                    );
+                },
             },
+            
         ],
         []
     );
@@ -110,11 +165,11 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                     <tbody>
                         {page.map((row: Row<object>) => {
                             prepareRow(row);
-                            const rowProps = row.getRowProps(); 
+                            const rowProps = row.getRowProps();
 
                             return (
-                                <React.Fragment key={row.id}> 
-                                    <tr {...rowProps}> 
+                                <React.Fragment key={row.id}>
+                                    <tr {...rowProps}>
                                         {row.cells.map((cell) => (
                                             <td {...cell.getCellProps()} style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>
                                                 {cell.render('Cell')}
@@ -130,22 +185,27 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                                                         <tr>
                                                             <th>Service Name</th>
                                                             <th>Sub-Service Name</th>
-                                                            <th>Total Cost (USD)</th>
+                                                            <th>Total Cost (USD)↑</th>
                                                             <th>Costs Over Time</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {/* Render unique services only */}
-                                                        {(row.original as Data).services.filter((service: Service, index: number, self: Service[]) =>
-                                                            index === self.findIndex(s => s.serviceName === service.serviceName)
-                                                        ).map((service: Service) => (
-                                                            <tr key={`${service.serviceName}-${service.chargeDescriptionName}`}> {/* Use a unique key for each service */}
-                                                                <td>{service.serviceName}</td>
-                                                                <td>{service.chargeDescriptionName}</td>
-                                                                <td>${service.chargeDescriptionCost}</td>
-                                                                <td>{service.graph}</td>
-                                                            </tr>
-                                                        ))}
+                                                        {/* Sort services by total cost in descending order before rendering */}
+                                                        {(row.original as Data).services
+                                                            .sort((a: Service, b: Service) => b.chargeDescriptionCost - a.chargeDescriptionCost)
+                                                            .map((service: Service) => {
+                                                                const sortedGraphData = service.graph.props.data.sort((a: { date: string }, b: { date: string }) =>
+                                                                    new Date(a.date).getTime() - new Date(b.date).getTime()
+                                                                )
+                                                                return (
+                                                                <tr key={`${service.serviceName}-${service.chargeDescriptionName}`}>
+                                                                    <td>{service.serviceName}</td>
+                                                                    <td>{service.chargeDescriptionName}</td>
+                                                                    <td>${service.chargeDescriptionCost}</td>
+                                                                    <td><SparklineGraph data={sortedGraphData} /></td>
+                                                                </tr>
+                                                                 );
+                                                                })}
                                                     </tbody>
                                                 </table>
                                             </td>

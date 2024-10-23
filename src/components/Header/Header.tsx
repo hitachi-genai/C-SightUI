@@ -21,8 +21,10 @@ function Header() {
   };
 
   // Function to transform the API response data
+
   const transformData = (result: any) => {
     const transformedData: any = {};
+  
     result[0].data.serviceCategories.forEach((category: any) => {
       const categoryName = category.serviceCategory;
       if (!transformedData[categoryName]) {
@@ -31,24 +33,35 @@ function Header() {
           services: [],
         };
       }
+  
       category.serviceNames.forEach((service: any) => {
         service.chargeDescriptions.forEach((charge: any) => {
+          // Sort incurredCostsByTimeUnit by date in ascending order
+          const sortedIncurredCosts = charge.incurredCostsByTimeUnit.sort(
+            (a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+  
           transformedData[categoryName].services.push({
             serviceName: service.serviceName,
             chargeDescriptionName: charge.chargeDescriptionName,
             chargeDescriptionCost: parseFloat(charge.chargeDescriptionCost).toFixed(0),
             graph: (
               <SparklineGraph
-              data={charge.incurredCostsByTimeUnit.map((cost: { incurredCost: number }) => Math.round(cost.incurredCost))}
-            />
+                data={sortedIncurredCosts.map((cost: { date: string, incurredCost: number }) => ({
+                  date: cost.date,
+                  incurredCost: Math.round(cost.incurredCost),
+                }))}
+              />
             ),
           });
         });
       });
     });
+  
     return Object.values(transformedData);
   };
-
+  
+  
   // Fetch data on page load using useQuery
   const { data: initialData, isLoading } = useQuery(
     ['costBreakdown', startDate, endDate],

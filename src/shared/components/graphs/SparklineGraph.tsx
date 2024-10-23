@@ -3,22 +3,22 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 interface SparklineGraphProps {
-  data: number[];
+  data: { date: string; incurredCost: number }[]; // Updated to include date and incurredCost
 }
 
 const SparklineGraph: React.FC<SparklineGraphProps> = ({ data }) => {
   const options = {
     chart: {
-      type: 'area', 
+      type: 'area',
       backgroundColor: null,
       borderWidth: 0,
       margin: [2, 0, 2, 0],
       width: 120,
-      height: 30, 
+      height: 30,
       style: {
         overflow: 'visible',
       },
-      skipClone: true, 
+      skipClone: true,
     },
     title: {
       text: '',
@@ -27,8 +27,9 @@ const SparklineGraph: React.FC<SparklineGraphProps> = ({ data }) => {
       enabled: false,
     },
     xAxis: {
+      type: 'datetime', // Use datetime type for x-axis
       labels: {
-        enabled: false,
+        enabled: false, // Hide labels for this small sparkline
       },
       title: {
         text: null,
@@ -53,11 +54,12 @@ const SparklineGraph: React.FC<SparklineGraphProps> = ({ data }) => {
       outside: true,
       shared: true,
       formatter: function (this: Highcharts.TooltipFormatterContextObject): string {
-        return `<b>${this.y}</b>`; // Only shows the y value, no "Series 1"
-      }
+        const date = Highcharts.dateFormat('%Y-%m-%d', this.x as number); // Format date
+        return `<b>Date: ${date}</b><br/><b>Cost: $${this.y}</b>`; // Show both date and cost
+      },
     },
     legend: {
-      enabled: false, 
+      enabled: false,
     },
     plotOptions: {
       series: {
@@ -70,19 +72,19 @@ const SparklineGraph: React.FC<SparklineGraphProps> = ({ data }) => {
           },
         },
         marker: {
-          radius: 2, 
+          radius: 2,
           states: {
             hover: {
-              radius: 3, 
+              radius: 3,
             },
           },
         },
-        fillOpacity: 0.25, 
+        fillOpacity: 0.25,
       },
     },
     series: [
       {
-        data,
+        data: data.map((point) => [new Date(point.date).getTime(), point.incurredCost]), // Map to [timestamp, cost]
         name: '',
       },
     ],

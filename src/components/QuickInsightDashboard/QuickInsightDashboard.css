@@ -9,30 +9,6 @@
   overflow-y: auto;
 }
 
-.metrics-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-}
-
-.metric-card {
-  background-color: rgb(25, 118, 210);
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-  color: ghostwhite;
-}
-
-h1 {
-  font-size: x-large;
-  font-weight: 800;
-}
-
-p {
-  font-size: 13px;
-  padding: 10px;
-}
-
 .charts-section {
   display: flex;
   justify-content: space-between;
@@ -86,7 +62,7 @@ p {
   );
 }
 .progress-number{
-  margin-left: 40%;
+  margin-left: 56%;
 }
 .progress-text{
   font-weight: 600;
@@ -94,4 +70,56 @@ p {
 .progress-bar{
 font-weight: 600;
 text-align: center;
+}
+
+.metrics-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px; 
+}
+
+.metric-card {
+  background-color: rgb(25, 118, 210);
+  border-radius: 4px;
+  color: ghostwhite;
+  display: grid;
+  grid-template-rows: 60px 40px 1fr 40px; 
+  text-align: center;
+  padding: 20px;
+  height: 238px;
+  box-sizing: border-box;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2); 
+}
+
+.metric-card i {
+  font-size: 44px;
+  grid-row: 1 / 2;
+  align-self: start; 
+}
+
+.metric-card p:first-of-type {
+  font-size: 14px;
+  grid-row: 2 / 3;
+  margin: 0;
+  align-self: start; 
+  white-space: normal; 
+  text-align: center;
+  line-height: 1.5; 
+}
+
+.metric-card h1 {
+  font-size: 24px;
+  font-weight: bold;
+  grid-row: 3 / 4;
+  margin-top: 20px;
+  align-self: start; 
+}
+
+.metric-card p:last-of-type {
+  font-size: 14px;
+  grid-row: 4 / 5;
+  margin: 0;
+  align-self: start; 
+  white-space: normal; 
+  line-height: 1.5;
 }
