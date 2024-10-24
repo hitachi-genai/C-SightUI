@@ -29,10 +29,10 @@ const App: React.FC = () => {
           <Router>
             <div style={{ display: 'flex', flexDirection: 'column', height: '105vh', backgroundColor: 'white' }}>
                 {/* <img className="logo" style={{width:'20px'}} src={logo} /> */}
-              {/* <HvHeader position="relative" style={{ backgroundColor: '#1976d2' }}>
+              <HvHeader position="relative" style={{ backgroundColor: '#1976d2' }}>
                 <h1 className="logo">C•Sight</h1>
-              </HvHeader> */}
-              <HeaderWithNotifications />
+              </HvHeader>
+              {/* <HeaderWithNotifications /> */}
               <div style={{ display: "flex", height: "200vh" ,paddingTop:'5%' }}>
                 {/* Collapsible Menu */}
                 <CollapsibleIcons isOpen={isOpen} toggleMenu={toggleMenu} />
