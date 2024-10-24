@@ -33,7 +33,7 @@ const App: React.FC = () => {
                 <h1 className="logo">C•Sight</h1>
               </HvHeader>
               {/* <HeaderWithNotifications /> */}
-              <div style={{ display: "flex", height: "200vh" ,paddingTop:'5%' }}>
+              <div style={{ display: "flex", height: "200vh"}}>
                 {/* Collapsible Menu */}
                 <CollapsibleIcons isOpen={isOpen} toggleMenu={toggleMenu} />
 
