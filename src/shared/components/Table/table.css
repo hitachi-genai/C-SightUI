@@ -31,10 +31,10 @@ border-collapse: collapse;
 }
 
 th {
-border: 1px solid #ddd; 
 padding: 10px;
-background-color: #f5f5f5; 
+background-color: #2c85dd; 
 border-bottom: 2px solid #1976d2;
+color: white;
 }
 
 td {

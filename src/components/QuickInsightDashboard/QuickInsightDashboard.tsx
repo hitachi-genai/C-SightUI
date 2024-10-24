@@ -15,11 +15,7 @@ import './QuickInsightDashboard.css';
 // Highcharts Configuration (same as before)
 const lineChartOptions = {
   credits: { enabled: false },
-  title: {
-    text: '<h1 style="font-size: 16px; font-weight:800">Cost projections: Total monthly costs (infrastructure & staff)</h1>',
-    useHTML: true,
-    align: 'left',
-  },
+  title: null,
 
   xAxis: { categories: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'] },
   series: [
@@ -34,11 +30,7 @@ const lineChartOptions = {
 
 const treemapOptions = {
   credits: { enabled: false },
-  title: {
-    text: '<h1 style="font-size: 16px;font-weight:800;">Cost allocation</h1>',
-    useHTML: true,
-    align: 'left',
-  },
+  title: null,
   series: [{
     type: 'treemap',
     layoutAlgorithm: 'squarified',
@@ -52,24 +44,6 @@ const treemapOptions = {
   }],
 };
 
-// const ganttOptions = {
-//   credits: { enabled: false },
-//   title: {
-//     text: '<h2 style="font-weight:bold;">GenAI Project Timeline</h2>', 
-//     useHTML: true, // Allows HTML rendering
-//   },
-//   series: [{
-//     name: 'GenAI Phases',
-//     data: [
-//       { name: 'Phase 1', start: Date.UTC(2024, 0, 1), end: Date.UTC(2024, 3, 30), completed: 0.5 },
-//       { name: 'Phase 2', start: Date.UTC(2024, 4, 1), end: Date.UTC(2024, 6, 30), completed: 0.2 },
-//     ],
-//   }],
-//   xAxis: {
-//     tickInterval: 1000 * 60 * 60 * 24 * 30,
-//     labels: { format: '{value:%b %Y}' },
-//   },
-// };
 
 // Timeline Data
 const timelineData = [
@@ -100,7 +74,8 @@ const QuickInsightDashboard: React.FC = () => {
   const timelineRef = useRef<HTMLDivElement | null>(null);
   const [timelineInitialized, setTimelineInitialized] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [isCostVisible, setIsCostVisible] = useState(true);
+  const [isCostVisible, setIsCostVisible] = useState(false);
+  const [isoverallCostVisible, setoverallCostVisible] = useState(false);
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
@@ -110,6 +85,11 @@ const QuickInsightDashboard: React.FC = () => {
     setIsCostVisible(!isCostVisible);
   };
 
+  const overallCostDropdown = () => {
+    setoverallCostVisible(!isoverallCostVisible);
+  };
+
+
   useEffect(() => {
     if (timelineRef.current && !timelineInitialized) {
       new Timeline(timelineRef.current, timelineData, timelineGroups, timelineOptions);
@@ -118,8 +98,7 @@ const QuickInsightDashboard: React.FC = () => {
   }, [timelineInitialized]);
 
   return (
-    <div className="dashboard-container">
-
+    <div className="dashboard-container" style={{ overflowY: 'auto', maxHeight: '150vh' }}>
       {/* Metric Cards */}
       <div className="metrics-section">
         {/* The cards */}
@@ -157,23 +136,23 @@ const QuickInsightDashboard: React.FC = () => {
         <div ref={timelineRef} className="vis-timeline-container"></div>
       </div> */}
 
-      <div className="timeline-section">
-        <h1 style={{ marginBottom: '20px', marginTop: '20px', fontSize: 'x-large', fontWeight: '800' }}>
-          GenAI Project Timeline
-        </h1>
+<div className="timeline-section" style={{ width: '100%' }}>
+  <h1 style={{ marginBottom: '20px', marginTop: '20px', fontSize: 'x-large', fontWeight: '800' }}>
+    GenAI Project Timeline
+  </h1>
 
         {/* Horizontal line */}
-        <hr style={{ border: '2px solid rgb(25, 118, 210)', borderRadius: '4px', marginBottom: '20px' }} />
+        <hr style={{ width:'60%',border: '2px solid rgb(25, 118, 210)', borderRadius: '4px', marginBottom: '20px' }} />
 
         {/* Dropdown Checkbox Icon */}
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', justifyContent: 'flex-end' }}>
+        <div style={{ width:'60%', display: 'flex', alignItems: 'center', marginBottom: '20px', justifyContent: 'flex-end' }}>
           <i
             className={`fas fa-wrench ${dropdownVisible ? 'fas fa-wrench' : 'fas fa-wrench'}`}
-            style={{ cursor: 'pointer', fontSize: '18px', marginLeft: '973px', color: 'rgb(25, 118, 210)' }}
+            style={{ cursor: 'pointer', fontSize: '18px', marginLeft: '973px', marginRight: '10px', color: 'rgb(25, 118, 210)' }}
             onClick={toggleDropdown}
           ></i>
-          
-          <span style={{justifyContent: 'space-between'}}></span>
+
+          <span style={{ justifyContent: 'space-between' }}></span>
           <i className='fas fa-plus'
             // className={`fas ${dropdownVisible ? 'fa-minus' : 'fa-plus'}`}
             style={{ cursor: 'pointer', fontSize: '18px', color: 'rgb(25, 118, 210)' }}
@@ -216,9 +195,12 @@ const QuickInsightDashboard: React.FC = () => {
           )}
         </div>
 
-      
+
         {/* Timeline Container */}
+        <div style={{ overflowY: 'auto', maxHeight: '150px' }}>
           <div ref={timelineRef} className="vis-timeline-container"></div>
+        </div>
+
       </div>
 
       {/* Charts Section */}
@@ -227,45 +209,117 @@ const QuickInsightDashboard: React.FC = () => {
           {/* Progress Bar with Title */}
           <div className="progress-bar-panel">
             <h1 style={{ marginBottom: '16px', marginTop: '10px', fontSize: '16px', fontWeight: '800' }}>Budget burn rate: Total costs</h1>
-            <hr style={{ border: '2px solid rgb(25, 118, 210)', borderRadius: '4px', marginBottom: '40px' }} />
+            <hr style={{ border: '2px solid rgb(25, 118, 210)', borderRadius: '4px', marginBottom: '18px' }} />
 
-            {/* Expected Costs */}
-            <div className="progress-group">
-              <span className="progress-text">Expected costs &nbsp;</span>
-              <span className="progress-number pull-right">
-                <b>{expectedCosts.toLocaleString()}</b> / <span>{totalBudget.toLocaleString()}</span>
-              </span>
-              <div className="progress">
-                <div
-                  className="progress-bar progress-bar-info"
-                  role="progressbar"
-                  style={{ width: `${expectedPercentage > 100 ? 100.077 : expectedPercentage}%`, minWidth: '100.077%' }}
-                >
-                  {expectedPercentage.toFixed(1)}%
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', justifyContent: 'flex-end' }}>
+              <i
+                className={`fas fa-wrench ${isCostVisible ? 'fas fa-wrench' : 'fas fa-wrench'}`}
+                style={{ cursor: 'pointer', fontSize: '18px', marginLeft: '973px', marginRight: '10px', color: 'rgb(25, 118, 210)' }}
+                onClick={totalCostDropdown}
+              ></i>
+
+              <span style={{ justifyContent: 'space-between' }}></span>
+              <i className='fas fa-plus'
+                // className={`fas ${dropdownVisible ? 'fa-minus' : 'fa-plus'}`}
+                style={{ cursor: 'pointer', fontSize: '18px', color: 'rgb(25, 118, 210)' }}
+              ></i>
+
+              {/* Dropdown box */}
+              {isCostVisible && (
+                <div style={{ position: 'relative' }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: '25px',
+                    right: '0',
+                    backgroundColor: 'white',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    padding: '10px',
+                    zIndex: 1000,
+                    minWidth: '150px',
+                  }}>
+                    <h4 style={{ margin: '0 0 10px 0', fontSize: '14px' }}>Budget type:</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                      <label>
+                        <input type="checkbox" name="total" defaultChecked />
+                        Total
+                      </label>
+                      <label>
+                        <input type="checkbox" name="staff" />
+                        Staff
+                      </label>
+                      <label>
+                        <input type="checkbox" name="infrastructure" />
+                        Infrastructure
+                      </label>
+                    </div>
+                    <h4 style={{ margin: '0 0 10px 0', fontSize: '14px' }}>Warning Level:</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                      <label>
+                        <input type="checkbox" name="total" defaultChecked />
+                        75%
+                      </label>
+                      <label>
+                        <input type="checkbox" name="staff" />
+                        80%
+                      </label>
+                      <label>
+                        <input type="checkbox" name="infrastructure" />
+                        85%
+                      </label>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            {/* Observed Costs */}
-            <div className="progress-group">
-              <span className="progress-text">Observed costs &nbsp;</span>
-              <span className="progress-number pull-right">
-                <b>{observedCosts.toLocaleString()}</b> / <span>{totalBudget.toLocaleString()}</span>
-              </span>
-              <div className="progress">
-                <div
-                  className="progress-bar progress-bar-warning"
-                  role="progressbar"
-                  style={{ width: `${observedPercentage > 100 ? 100.077 : observedPercentage}%`, minWidth: '100.077%', paddingRight: '105px' }}
-                >
-                  {observedPercentage.toFixed(1)}%
+
+            {/* Expected Costs */}
+            <div style={{ overflowY: 'auto', maxHeight: '180px' }}>
+              <div className="progress-group">
+                <span className="progress-text">Expected costs &nbsp;</span>
+                <span className="progress-number pull-right">
+                  <b>{expectedCosts.toLocaleString()}</b> / <span>{totalBudget.toLocaleString()}</span>
+                </span>
+                <div className="progress">
+                  <div
+                    className="progress-bar progress-bar-info"
+                    role="progressbar"
+                    style={{ width: `${expectedPercentage > 100 ? 100.077 : expectedPercentage}%`, minWidth: '100.077%' }}
+                  >
+                    {expectedPercentage.toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+
+              {/* Observed Costs */}
+              <div className="progress-group">
+                <span className="progress-text">Observed costs &nbsp;</span>
+                <span className="progress-number pull-right">
+                  <b>{observedCosts.toLocaleString()}</b> / <span>{totalBudget.toLocaleString()}</span>
+                </span>
+                <div className="progress">
+                  <div
+                    className="progress-bar progress-bar-warning"
+                    role="progressbar"
+                    style={{ width: `${observedPercentage > 100 ? 100.077 : observedPercentage}%`, minWidth: '100.077%', paddingRight: '105px' }}
+                  >
+                    {observedPercentage.toFixed(1)}%
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-
           {/* Line Chart */}
           <div className="chart-card">
+          <h1 style={{ marginBottom: '16px', marginTop: '10px', fontSize: '16px', fontWeight: '800' }}>Cost projections: Total monthly costs (infrastructure & staff)</h1>
+          <hr style={{ border: '2px solid rgb(25, 118, 210)', borderRadius: '4px', marginBottom: '18px' }} />
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', justifyContent: 'flex-end' }}>
+          <i className='fas fa-plus'
+            style={{ cursor: 'pointer', fontSize: '18px', color: 'rgb(25, 118, 210)' }}
+          ></i>
+          </div>
             <HighchartsReact highcharts={Highcharts} options={lineChartOptions} />
           </div>
         </div>
@@ -273,6 +327,58 @@ const QuickInsightDashboard: React.FC = () => {
         {/* Treemap in a different column but same row */}
         <div className="charts-column">
           <div className="chart-card">
+          <h1 style={{ marginBottom: '16px', marginTop: '10px', fontSize: '16px', fontWeight: '800' }}>Cost allocation</h1>
+          <hr style={{ border: '2px solid rgb(25, 118, 210)', borderRadius: '4px', marginBottom: '18px' }} />
+  
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', justifyContent: 'flex-end' }}>
+          <i
+            className={`fas fa-wrench ${isoverallCostVisible ? 'fas fa-wrench' : 'fas fa-wrench'}`}
+            style={{ cursor: 'pointer', fontSize: '18px', marginLeft: '973px', marginRight: '10px', color: 'rgb(25, 118, 210)' }}
+            onClick={overallCostDropdown}
+          ></i>
+
+          <span style={{ justifyContent: 'space-between' }}></span>
+          <i className='fas fa-plus'
+            // className={`fas ${dropdownVisible ? 'fa-minus' : 'fa-plus'}`}
+            style={{ cursor: 'pointer', fontSize: '18px', color: 'rgb(25, 118, 210)' }}
+          ></i>
+
+          {/* Dropdown box */}
+          {isoverallCostVisible && (
+            <div style={{ position: 'relative' }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '25px',
+                  right: '0',
+                  backgroundColor: 'white',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                  padding: '10px',
+                  zIndex: 1000,
+                  minWidth: '150px',
+                }}
+              >
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '14px' }}>Metric Type:</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                  <label>
+                    <input type="checkbox" name="financial" defaultChecked />
+                    Cost
+                  </label>
+                  <label>
+                    <input type="checkbox" name="technical" />
+                    users
+                  </label>
+                  <label>
+                    <input type="checkbox" name="other" />
+                    Sessions
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
             <HighchartsReact highcharts={Highcharts} options={treemapOptions} />
           </div>
         </div>

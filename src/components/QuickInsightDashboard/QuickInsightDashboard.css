@@ -62,8 +62,10 @@
   );
 }
 .progress-number{
-  margin-left: 56%;
+  justify-content: flex-end;
+    display: flex;
 }
+
 .progress-text{
   font-weight: 600;
 }
@@ -122,4 +124,29 @@ text-align: center;
   align-self: start; 
   white-space: normal; 
   line-height: 1.5;
+}
+
+.metrics-section, .charts-section {
+  width: 60%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.metric-card, .chart-card {
+  flex: 1; /* Each card takes equal space */
+  margin: 0 10px; /* Add a margin between cards */
+}
+
+.timeline-section {
+  width: 100%;
+}
+
+.vis-timeline-container {
+  width: 60%;
+}
+
+.progress-bar-panel, .charts-column {
+  width: 100%;
+  margin: 10px 0;
 }

@@ -47,16 +47,37 @@ const ReactTable: React.FC<{ data: Data[] }> = ({ data }) => {
                 Header: 'Service name',
                 accessor: 'services',
                 id: 'serviceName',
-                Cell: ({ row }: { row: any }) => {
-                    const uniqueServiceNames = Array.from(new Set(row.original.services.map((service: Service) => service.serviceName)));
-                    const serviceNames = uniqueServiceNames.join(', ');
-                    return <span style={{ fontWeight: 'bolder' }}>{serviceNames}</span>;
-                },
-                
                 // Cell: ({ row }: { row: any }) => {
-                //     const serviceNames = row.original.services.map((service: Service) => service.serviceName).join(', ');
-                //     return <span style={{fontWeight:'bolder'}}>{serviceNames}</span>;
+                //     const uniqueServiceNames = Array.from(new Set(row.original.services.map((service: Service) => service.serviceName)));
+                //     const serviceNames = uniqueServiceNames.join(', ');
+                //     return <span style={{ fontWeight: 'bolder' }}>{serviceNames}</span>;
                 // },
+
+                Cell: ({ row }: { row: any }) => {
+                    // Ensure the services have serviceName of type string
+                    const uniqueServiceNames = Array.from(new Set(
+                        row.original.services.map((service: Service) => service.serviceName as string)
+                    )) as string[]; // Explicitly cast to string[]
+                
+                    return (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                            {uniqueServiceNames.map((serviceName: string, index: number) => (
+                                <span 
+                                    key={index} 
+                                    style={{
+                                        fontWeight: 'bolder',
+                                        border: '1px solid #007bff', // Border with blue color
+                                        borderRadius: '8px', // Rounded corners
+                                        backgroundColor: '#e0f7ff', // Light blue background
+                                        padding: '5px 10px', // Padding for some space around the text
+                                    }}
+                                >
+                                    {serviceName}
+                                </span>
+                            ))}
+                        </div>
+                    );
+                },
             },
             {
                 Header: 'Sub-service name',
